@@ -8,13 +8,27 @@ interface TaskStatus {
   review: boolean;
 }
 
+interface TaskTimestamp {
+  instagram: number | null;
+  review: number | null;
+}
+
+interface TaskWarning {
+  instagram: boolean;
+  review: boolean;
+}
+
 const KapoorSonsLanding: React.FC = () => {
   const [tasks, setTasks] = useState<TaskStatus>({ instagram: false, review: false });
   const [showCelebration, setShowCelebration] = useState(false);
+  const [taskTimestamps, setTaskTimestamps] = useState<TaskTimestamp>({ instagram: null, review: null });
+  const [taskWarnings, setTaskWarnings] = useState<TaskWarning>({ instagram: false, review: false });
 
-  // Load task status from localStorage on mount
+  // Load task status and timestamps from localStorage on mount
   useEffect(() => {
     const savedTasks = localStorage.getItem('kapoor-sons-tasks');
+    const savedTimestamps = localStorage.getItem('kapoor-sons-timestamps');
+    
     if (savedTasks) {
       const parsed = JSON.parse(savedTasks);
       setTasks(parsed);
@@ -22,12 +36,66 @@ const KapoorSonsLanding: React.FC = () => {
         setShowCelebration(true);
       }
     }
+    
+    if (savedTimestamps) {
+      setTaskTimestamps(JSON.parse(savedTimestamps));
+    }
   }, []);
 
   // Save task status to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('kapoor-sons-tasks', JSON.stringify(tasks));
   }, [tasks]);
+
+  // Save timestamps to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('kapoor-sons-timestamps', JSON.stringify(taskTimestamps));
+  }, [taskTimestamps]);
+
+  // Handle page visibility change to detect user return
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // User returned to page
+        const currentTime = Date.now();
+        
+        // Check Instagram task
+        if (taskTimestamps.instagram && !tasks.instagram) {
+          const timeDiff = currentTime - taskTimestamps.instagram;
+          if (timeDiff < 5000) {
+            // Show warning for quick return
+            setTaskWarnings(prev => ({ ...prev, instagram: true }));
+            setTimeout(() => {
+              setTaskWarnings(prev => ({ ...prev, instagram: false }));
+            }, 3000);
+          } else {
+            // Approve task after 5+ seconds
+            setTasks(prev => ({ ...prev, instagram: true }));
+            setTaskTimestamps(prev => ({ ...prev, instagram: null }));
+          }
+        }
+        
+        // Check Google Review task
+        if (taskTimestamps.review && !tasks.review) {
+          const timeDiff = currentTime - taskTimestamps.review;
+          if (timeDiff < 5000) {
+            // Show warning for quick return
+            setTaskWarnings(prev => ({ ...prev, review: true }));
+            setTimeout(() => {
+              setTaskWarnings(prev => ({ ...prev, review: false }));
+            }, 3000);
+          } else {
+            // Approve task after 5+ seconds
+            setTasks(prev => ({ ...prev, review: true }));
+            setTaskTimestamps(prev => ({ ...prev, review: null }));
+          }
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [taskTimestamps, tasks]);
 
   // Check if both tasks are completed
   useEffect(() => {
@@ -67,21 +135,19 @@ const KapoorSonsLanding: React.FC = () => {
   }, [tasks.instagram, tasks.review, showCelebration]);
 
   const handleInstagramClick = () => {
+    if (!tasks.instagram) {
+      // Record timestamp when user clicks
+      setTaskTimestamps(prev => ({ ...prev, instagram: Date.now() }));
+    }
     window.open('https://www.instagram.com/kapoorandsons_betul/', '_blank');
-    
-    // Mark as completed after a short delay (simulating user follow)
-    setTimeout(() => {
-      setTasks(prev => ({ ...prev, instagram: true }));
-    }, 2000);
   };
 
   const handleReviewClick = () => {
+    if (!tasks.review) {
+      // Record timestamp when user clicks
+      setTaskTimestamps(prev => ({ ...prev, review: Date.now() }));
+    }
     window.open('https://g.page/r/CQ6kGR1I3AInEAE/review', '_blank');
-    
-    // Mark as completed after a short delay (simulating user review)
-    setTimeout(() => {
-      setTasks(prev => ({ ...prev, review: true }));
-    }, 3000);
   };
 
   const completedCount = Object.values(tasks).filter(Boolean).length;
@@ -171,6 +237,21 @@ const KapoorSonsLanding: React.FC = () => {
               Follow @kapoorandsons_betul for updates and delicious content!
             </p>
             
+            {/* Warning message for Instagram */}
+            <AnimatePresence>
+              {taskWarnings.instagram && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-600 text-sm font-medium flex items-center space-x-2"
+                >
+                  <span>⏳</span>
+                  <span>Please complete the follow before returning.</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -226,6 +307,21 @@ const KapoorSonsLanding: React.FC = () => {
             <p className="text-muted-foreground mb-4">
               Share your experience and help others discover us!
             </p>
+            
+            {/* Warning message for Google Review */}
+            <AnimatePresence>
+              {taskWarnings.review && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-600 text-sm font-medium flex items-center space-x-2"
+                >
+                  <span>⏳</span>
+                  <span>Please complete the review before returning.</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
             
             <motion.button
               whileHover={{ scale: 1.02 }}

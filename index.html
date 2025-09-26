@@ -3,6 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Set initial theme based on system preference before React mounts
+      (function () {
+        try {
+          var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var root = document.documentElement;
+          if (isDark) {
+            root.classList.add('dark');
+          } else {
+            root.classList.remove('dark');
+          }
+        } catch (_) {
+          // no-op
+        }
+      })();
+    </script>
     <title>Kapoor & Sons - Thank You</title>
     <meta name="description" content="Support Kapoor & Sons by following us on Instagram and leaving a Google review. Thank you for your support!" />
     <meta name="author" content="Kapoor & Sons" />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Instagram, Star, ExternalLink } from 'lucide-react';
+import { Check, Instagram, Star, ExternalLink, Moon, Sun } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface TaskStatus {
@@ -23,6 +23,24 @@ const KapoorSonsLanding: React.FC = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [taskTimestamps, setTaskTimestamps] = useState<TaskTimestamp>({ instagram: null, review: null });
   const [taskWarnings, setTaskWarnings] = useState<TaskWarning>({ instagram: false, review: false });
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Initialize dark mode from localStorage or system preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('kapoor-sons-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+    
+    setIsDarkMode(shouldBeDark);
+    document.documentElement.classList.toggle('dark', shouldBeDark);
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    document.documentElement.classList.toggle('dark', newMode);
+    localStorage.setItem('kapoor-sons-theme', newMode ? 'dark' : 'light');
+  };
 
   // Load task status and timestamps from localStorage on mount
   useEffect(() => {
@@ -154,11 +172,26 @@ const KapoorSonsLanding: React.FC = () => {
   const totalTasks = 2;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-background to-secondary">
+      {/* Dark Mode Toggle */}
+      <motion.button
+        onClick={toggleDarkMode}
+        className="dark-toggle z-50"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        {isDarkMode ? (
+          <Sun className="w-5 h-5 text-foreground" />
+        ) : (
+          <Moon className="w-5 h-5 text-foreground" />
+        )}
+      </motion.button>
+
       {/* Background decorative elements */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-success/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-primary/5 to-success/5 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       <motion.div

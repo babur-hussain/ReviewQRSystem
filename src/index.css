@@ -73,37 +73,48 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode with warm tones */
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
+    /* Premium Dark Mode - Elegant & Modern */
+    --background: 222 84% 4.9%;
+    --foreground: 210 40% 98%;
 
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
+    --card: 222 84% 4.9%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 24 9.8% 10%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 222 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 43 74% 49%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 43 74% 55%;
+    --primary-foreground: 222 84% 4.9%;
 
-    --secondary: 24 9.8% 10%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary: 217 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 24 9.8% 10%;
-    --muted-foreground: 24 5.4% 63.9%;
+    --muted: 217 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 24 9.8% 10%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 217 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 95%;
+    --destructive-foreground: 210 40% 98%;
 
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --success-foreground: 222 84% 4.9%;
 
-    --border: 24 5.7% 25.9%;
-    --input: 24 5.7% 25.9%;
-    --ring: 43 74% 49%;
+    --border: 217 32.6% 17.5%;
+    --input: 217 32.6% 17.5%;
+    --ring: 43 74% 55%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(43 74% 55%), hsl(38 69% 60%));
+    --gradient-background: linear-gradient(135deg, hsl(222 84% 4.9%), hsl(217 32.6% 17.5%));
+    --gradient-card: linear-gradient(145deg, hsl(217 32.6% 17.5% / 0.8), hsl(222 84% 4.9% / 0.9));
+
+    /* Glowing shadows for dark mode */
+    --shadow-elegant: 0 10px 30px -10px hsl(43 74% 55% / 0.3);
+    --shadow-success: 0 10px 25px -8px hsl(142 71% 45% / 0.4);
+    --shadow-glow: 0 0 40px hsl(43 74% 55% / 0.15);
+    --shadow-success-glow: 0 0 30px hsl(142 71% 45% / 0.2);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -132,6 +143,10 @@ All colors MUST be HSL.
     background: var(--gradient-card);
   }
 
+  .dark .task-card {
+    box-shadow: var(--shadow-glow), 0 4px 20px -4px hsl(222 84% 4.9% / 0.8);
+  }
+
   .task-button {
     @apply bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95;
     background: var(--gradient-primary);
@@ -142,13 +157,25 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-elegant), 0 5px 15px -5px hsl(43 74% 49% / 0.4);
   }
 
+  .dark .task-button:hover {
+    box-shadow: var(--shadow-elegant), var(--shadow-glow);
+  }
+
   .success-button {
-    @apply bg-success hover:bg-success/90 text-success-foreground;
+    @apply bg-success hover:bg-success/90 text-success-foreground font-semibold py-3 px-6 rounded-lg;
     box-shadow: var(--shadow-success);
+  }
+
+  .dark .success-button {
+    box-shadow: var(--shadow-success), var(--shadow-success-glow);
   }
 
   .celebration-text {
     @apply text-2xl font-bold text-center bg-gradient-to-r from-primary to-success bg-clip-text text-transparent;
+  }
+
+  .dark-toggle {
+    @apply fixed top-4 right-4 p-2 rounded-lg bg-card border border-border hover:bg-accent transition-colors duration-200;
   }
 }
 

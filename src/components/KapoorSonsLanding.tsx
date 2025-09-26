@@ -289,7 +289,6 @@ const KapoorSonsLanding: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleInstagramClick}
-              disabled={tasks.instagram}
               className={`w-full flex items-center justify-center space-x-2 ${
                 tasks.instagram 
                   ? 'success-button animate-pulse-success' 
@@ -360,7 +359,6 @@ const KapoorSonsLanding: React.FC = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleReviewClick}
-              disabled={tasks.review}
               className={`w-full flex items-center justify-center space-x-2 ${
                 tasks.review 
                   ? 'success-button animate-pulse-success' 

@@ -217,7 +217,6 @@ const KapoorSonsLanding: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Method 1: Try to save to Google Sheets using a simple approach
       const data = {
         name: claimForm.name,
         mobile: claimForm.mobile,
@@ -225,27 +224,44 @@ const KapoorSonsLanding: React.FC = () => {
         date: new Date().toLocaleDateString()
       };
 
-      // Try to save to Google Sheets using a simple POST request
+      // Method 1: Try to save using a simple Google Sheets API approach
       try {
-        const response = await fetch('https://docs.google.com/forms/d/e/1FAIpQLSfYOUR_FORM_ID/formResponse', {
+        // Create a simple data object for Google Sheets
+        const sheetData = {
+          name: data.name,
+          mobile: data.mobile,
+          timestamp: data.timestamp,
+          date: data.date
+        };
+
+        // Try to save to a simple endpoint (you can replace this with your own)
+        const response = await fetch('https://api.sheetmonkey.io/form/your-form-id', {
           method: 'POST',
-          mode: 'no-cors',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
           },
-          body: new URLSearchParams({
-            'entry.NAME_FIELD_ID': data.name,
-            'entry.MOBILE_FIELD_ID': data.mobile,
-            'entry.TIMESTAMP_FIELD_ID': data.timestamp
-          })
+          body: JSON.stringify(sheetData)
         });
-        console.log('Data submitted to Google Sheets');
-      } catch (sheetError) {
-        console.log('Google Sheets submission failed, using fallback method');
+
+        if (response.ok) {
+          console.log('Data saved to Google Sheets successfully');
+        } else {
+          throw new Error('SheetMonkey submission failed');
+        }
+      } catch (apiError) {
+        console.log('API submission failed, using manual method');
         
-        // Fallback: Open a pre-filled Google Form in new tab
-        const googleFormUrl = `https://docs.google.com/forms/d/e/1FAIpQLSfYOUR_FORM_ID/viewform?usp=pp_url&entry.NAME_FIELD_ID=${encodeURIComponent(data.name)}&entry.MOBILE_FIELD_ID=${encodeURIComponent(data.mobile)}`;
-        window.open(googleFormUrl, '_blank');
+        // Method 2: Open a simple form that will save to Google Sheets
+        const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSfYOUR_ACTUAL_FORM_ID/viewform?usp=pp_url&entry.1234567890=${encodeURIComponent(data.name)}&entry.0987654321=${encodeURIComponent(data.mobile)}`;
+        window.open(formUrl, '_blank');
+        
+        // Also log the data for manual entry
+        console.log('=== CLAIM FORM DATA ===');
+        console.log('Name:', data.name);
+        console.log('Mobile:', data.mobile);
+        console.log('Timestamp:', data.timestamp);
+        console.log('Date:', data.date);
+        console.log('=====================');
       }
 
       // Mark as claimed

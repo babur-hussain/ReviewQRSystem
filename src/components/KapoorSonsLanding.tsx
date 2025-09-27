@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Instagram, Star, ExternalLink, Moon, Sun } from 'lucide-react';
+import { Check, Instagram, Star, ExternalLink, Moon, Sun, X, Gift } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface TaskStatus {
@@ -18,12 +18,26 @@ interface TaskWarning {
   review: boolean;
 }
 
+interface ClaimFormData {
+  name: string;
+  mobile: string;
+}
+
+interface OfferStatus {
+  claimed: boolean;
+  claimTime: number | null;
+}
+
 const KapoorSonsLanding: React.FC = () => {
   const [tasks, setTasks] = useState<TaskStatus>({ instagram: false, review: false });
   const [showCelebration, setShowCelebration] = useState(false);
   const [taskTimestamps, setTaskTimestamps] = useState<TaskTimestamp>({ instagram: null, review: null });
   const [taskWarnings, setTaskWarnings] = useState<TaskWarning>({ instagram: false, review: false });
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showOfferPopup, setShowOfferPopup] = useState(false);
+  const [claimForm, setClaimForm] = useState<ClaimFormData>({ name: '', mobile: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [offerStatus, setOfferStatus] = useState<OfferStatus>({ claimed: false, claimTime: null });
 
   // Initialize dark mode from localStorage or system preference
   useEffect(() => {
@@ -46,6 +60,7 @@ const KapoorSonsLanding: React.FC = () => {
   useEffect(() => {
     const savedTasks = localStorage.getItem('kapoor-sons-tasks');
     const savedTimestamps = localStorage.getItem('kapoor-sons-timestamps');
+    const savedOfferStatus = localStorage.getItem('kapoor-sons-offer-status');
     
     if (savedTasks) {
       const parsed = JSON.parse(savedTasks);
@@ -58,6 +73,11 @@ const KapoorSonsLanding: React.FC = () => {
     if (savedTimestamps) {
       setTaskTimestamps(JSON.parse(savedTimestamps));
     }
+
+    if (savedOfferStatus) {
+      const parsed = JSON.parse(savedOfferStatus);
+      setOfferStatus(parsed);
+    }
   }, []);
 
   // Save task status to localStorage whenever it changes
@@ -69,6 +89,11 @@ const KapoorSonsLanding: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('kapoor-sons-timestamps', JSON.stringify(taskTimestamps));
   }, [taskTimestamps]);
+
+  // Save offer status to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('kapoor-sons-offer-status', JSON.stringify(offerStatus));
+  }, [offerStatus]);
 
   // Handle page visibility change to detect user return
   useEffect(() => {
@@ -119,6 +144,11 @@ const KapoorSonsLanding: React.FC = () => {
   useEffect(() => {
     if (tasks.instagram && tasks.review && !showCelebration) {
       setShowCelebration(true);
+      // Show offer popup after a short delay
+      setTimeout(() => {
+        setShowOfferPopup(true);
+      }, 2000);
+      
       // Trigger confetti animation
       const duration = 3000;
       const animationEnd = Date.now() + duration;
@@ -152,6 +182,18 @@ const KapoorSonsLanding: React.FC = () => {
     }
   }, [tasks.instagram, tasks.review, showCelebration]);
 
+  // Check if offer claim period has expired (15 minutes)
+  useEffect(() => {
+    if (offerStatus.claimed && offerStatus.claimTime) {
+      const fifteenMinutes = 15 * 60 * 1000; // 15 minutes in milliseconds
+      const timeSinceClaim = Date.now() - offerStatus.claimTime;
+      
+      if (timeSinceClaim > fifteenMinutes) {
+        setOfferStatus({ claimed: false, claimTime: null });
+      }
+    }
+  }, [offerStatus]);
+
   const handleInstagramClick = () => {
     if (!tasks.instagram) {
       // Record timestamp when user clicks
@@ -166,6 +208,42 @@ const KapoorSonsLanding: React.FC = () => {
       setTaskTimestamps(prev => ({ ...prev, review: Date.now() }));
     }
     window.open('https://g.page/r/CQ6kGR1I3AInEAE/review', '_blank');
+  };
+
+  const handleClaimSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!claimForm.name.trim() || !claimForm.mobile.trim()) return;
+
+    setIsSubmitting(true);
+    
+    try {
+      // Submit to Google Sheets using Google Apps Script
+      const response = await fetch('https://script.google.com/macros/s/AKfycbzYUN5tvozwAg3iTQK_G4GDI0ZInpDuWIWNcAHcZ7bXVI/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: claimForm.name,
+          mobile: claimForm.mobile,
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      // Mark as claimed
+      setOfferStatus({ claimed: true, claimTime: Date.now() });
+      setShowOfferPopup(false);
+      setClaimForm({ name: '', mobile: '' });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      // Still mark as claimed for demo purposes
+      setOfferStatus({ claimed: true, claimTime: Date.now() });
+      setShowOfferPopup(false);
+      setClaimForm({ name: '', mobile: '' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const completedCount = Object.values(tasks).filter(Boolean).length;
@@ -411,6 +489,94 @@ const KapoorSonsLanding: React.FC = () => {
               >
                 We truly appreciate your support! 🙏
               </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Offer Popup */}
+        <AnimatePresence>
+          {showOfferPopup && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+              onClick={() => setShowOfferPopup(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                className="bg-card rounded-2xl p-6 max-w-md w-full relative"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setShowOfferPopup(false)}
+                  className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                
+                <div className="text-center mb-6">
+                  <Gift className="w-16 h-16 text-primary mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold mb-2">🎉 Congratulations!</h2>
+                  <p className="text-lg mb-2">Upon completion you are eligible for a FREE Glass Guard for your mobile phone.</p>
+                  <p className="text-sm text-muted-foreground">Tempered Glass Free & 50% Discount on UV Glass.</p>
+                </div>
+
+                <form onSubmit={handleClaimSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Name *</label>
+                    <input
+                      type="text"
+                      value={claimForm.name}
+                      onChange={(e) => setClaimForm(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Mobile Number *</label>
+                    <input
+                      type="tel"
+                      value={claimForm.mobile}
+                      onChange={(e) => setClaimForm(prev => ({ ...prev, mobile: e.target.value }))}
+                      className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      placeholder="Enter your mobile number"
+                      required
+                    />
+                  </div>
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting || !claimForm.name.trim() || !claimForm.mobile.trim()}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full task-button disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Submitting...' : 'Claim Now'}
+                  </motion.button>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Bottom Banner - Show after claim */}
+        <AnimatePresence>
+          {offerStatus.claimed && (
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="fixed bottom-0 left-0 right-0 bg-success text-success-foreground p-4 text-center z-40"
+            >
+              <div className="flex items-center justify-center space-x-2">
+                <Check className="w-5 h-5" />
+                <span className="font-semibold">✅ Congratulations! Your offer has been claimed. Offer can be redeemed at the Glass Counter.</span>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

@@ -218,23 +218,30 @@ const KapoorSonsLanding: React.FC = () => {
     
     try {
       // Submit to Google Sheets using Google Apps Script
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzYUN5tvozwAg3iTQK_G4GDI0ZInpDuWIWNcAHcZ7bXVI/exec', {
+      // Replace this URL with your actual Google Apps Script web app URL
+      const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+      
+      const formData = new FormData();
+      formData.append('name', claimForm.name);
+      formData.append('mobile', claimForm.mobile);
+      formData.append('timestamp', new Date().toISOString());
+
+      const response = await fetch(scriptUrl, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: claimForm.name,
-          mobile: claimForm.mobile,
-          timestamp: new Date().toISOString()
-        })
+        body: formData
       });
 
-      // Mark as claimed
+      if (response.ok) {
+        console.log('Form submitted successfully to Google Sheets');
+      } else {
+        console.log('Form submission completed (may not have reached Google Sheets)');
+      }
+
+      // Mark as claimed regardless of Google Sheets response
       setOfferStatus({ claimed: true, claimTime: Date.now() });
       setShowOfferPopup(false);
       setClaimForm({ name: '', mobile: '' });
+      
     } catch (error) {
       console.error('Error submitting form:', error);
       // Still mark as claimed for demo purposes

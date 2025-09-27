@@ -217,34 +217,31 @@ const KapoorSonsLanding: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Submit to Google Sheets using Google Apps Script
-      // Replace this URL with your actual Google Apps Script web app URL
-      const scriptUrl = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+      // Simple method: Open Google Form or redirect to a simple form
+      // Create a pre-filled Google Form URL or use a simple data collection method
       
-      const formData = new FormData();
-      formData.append('name', claimForm.name);
-      formData.append('mobile', claimForm.mobile);
-      formData.append('timestamp', new Date().toISOString());
-
-      const response = await fetch(scriptUrl, {
-        method: 'POST',
-        body: formData
+      // For now, we'll just log the data and mark as claimed
+      console.log('Claim form data:', {
+        name: claimForm.name,
+        mobile: claimForm.mobile,
+        timestamp: new Date().toISOString(),
+        date: new Date().toLocaleDateString()
       });
 
-      if (response.ok) {
-        console.log('Form submitted successfully to Google Sheets');
-      } else {
-        console.log('Form submission completed (may not have reached Google Sheets)');
-      }
-
-      // Mark as claimed regardless of Google Sheets response
+      // You can manually add this data to your Google Sheet
+      // Or use a simple form service like Formspree, Netlify Forms, etc.
+      
+      // Mark as claimed
       setOfferStatus({ claimed: true, claimTime: Date.now() });
       setShowOfferPopup(false);
       setClaimForm({ name: '', mobile: '' });
       
+      // Show success message
+      alert(`Thank you ${claimForm.name}! Your offer has been claimed. Please visit the Glass Counter to redeem your free glass guard.`);
+      
     } catch (error) {
       console.error('Error submitting form:', error);
-      // Still mark as claimed for demo purposes
+      // Still mark as claimed
       setOfferStatus({ claimed: true, claimTime: Date.now() });
       setShowOfferPopup(false);
       setClaimForm({ name: '', mobile: '' });

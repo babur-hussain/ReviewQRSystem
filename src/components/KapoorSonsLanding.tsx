@@ -224,44 +224,40 @@ const KapoorSonsLanding: React.FC = () => {
         date: new Date().toLocaleDateString()
       };
 
-      // Method 1: Try to save using a simple Google Sheets API approach
+      // Save data to Google Sheets using a working method
       try {
-        // Create a simple data object for Google Sheets
-        const sheetData = {
-          name: data.name,
-          mobile: data.mobile,
-          timestamp: data.timestamp,
-          date: data.date
-        };
-
-        // Try to save to a simple endpoint (you can replace this with your own)
-        const response = await fetch('https://api.sheetmonkey.io/form/your-form-id', {
+        // Use a simple service that works with Google Sheets
+        const response = await fetch('https://api.sheetmonkey.io/form/84HPuH9HVdTTM3akQR25ef', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(sheetData)
+          body: JSON.stringify({
+            name: data.name,
+            mobile: data.mobile,
+            timestamp: data.timestamp,
+            date: data.date
+          })
         });
 
         if (response.ok) {
-          console.log('Data saved to Google Sheets successfully');
+          console.log('✅ Data saved to Google Sheets successfully!');
         } else {
           throw new Error('SheetMonkey submission failed');
         }
       } catch (apiError) {
-        console.log('API submission failed, using manual method');
+        console.log('API submission failed, data logged for manual entry');
         
-        // Method 2: Open a simple form that will save to Google Sheets
-        const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSfYOUR_ACTUAL_FORM_ID/viewform?usp=pp_url&entry.1234567890=${encodeURIComponent(data.name)}&entry.0987654321=${encodeURIComponent(data.mobile)}`;
-        window.open(formUrl, '_blank');
-        
-        // Also log the data for manual entry
-        console.log('=== CLAIM FORM DATA ===');
+        // Log data for manual entry to Google Sheet
+        console.log('=== GLASS GUARD CLAIM DATA ===');
         console.log('Name:', data.name);
         console.log('Mobile:', data.mobile);
         console.log('Timestamp:', data.timestamp);
         console.log('Date:', data.date);
-        console.log('=====================');
+        console.log('==============================');
+        
+        // Show instructions for manual entry
+        alert(`Data logged! Please check the browser console (F12) for the claim details to manually add to your Google Sheet.`);
       }
 
       // Mark as claimed

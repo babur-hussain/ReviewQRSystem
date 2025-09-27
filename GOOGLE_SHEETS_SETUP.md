@@ -16,13 +16,9 @@
 
 ## Step 3: Link Script to Sheet
 
-1. In your Google Apps Script project, click on "Resources" > "Libraries"
-2. Add the Google Sheets API library (ID: `1B7FSrk5Zi6L1rSxxTDgDEUsPklukxJBLBn2bU3X6Tix9y4UBHK5MaK-Hz`)
-3. In the script, replace `SpreadsheetApp.getActiveSheet()` with:
-   ```javascript
-   const spreadsheet = SpreadsheetApp.openById('YOUR_SPREADSHEET_ID_HERE');
-   const sheet = spreadsheet.getActiveSheet();
-   ```
+✅ **Already configured!** The script is already set up to use your specific spreadsheet ID: `1YUN5tvozwAg3iTQK_G4GDI0ZInpDuWIWNcAHcZ7bXVI`
+
+Your Google Sheet: https://docs.google.com/spreadsheets/d/1YUN5tvozwAg3iTQK_G4GDI0ZInpDuWIWNcAHcZ7bXVI/edit?usp=sharing
 
 ## Step 4: Deploy as Web App
 

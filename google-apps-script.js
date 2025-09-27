@@ -6,8 +6,9 @@ function doPost(e) {
     // Parse the incoming data
     const data = JSON.parse(e.postData.contents);
     
-    // Get the active spreadsheet
-    const sheet = SpreadsheetApp.getActiveSheet();
+    // Get the specific spreadsheet by ID
+    const spreadsheet = SpreadsheetApp.openById('1YUN5tvozwAg3iTQK_G4GDI0ZInpDuWIWNcAHcZ7bXVI');
+    const sheet = spreadsheet.getActiveSheet();
     
     // If this is the first time, add headers
     if (sheet.getLastRow() === 0) {

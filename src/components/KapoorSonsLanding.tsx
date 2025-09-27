@@ -459,6 +459,57 @@ const KapoorSonsLanding: React.FC = () => {
           </motion.div>
         </div>
 
+        {/* Claim Offer Section */}
+        <AnimatePresence>
+          {showCelebration && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: -20 }}
+              transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
+              className="text-center space-y-4 p-6 bg-gradient-to-br from-primary/10 to-success/10 rounded-2xl border border-primary/20 mb-6"
+            >
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 0.5, repeat: 3 }}
+                className="text-6xl"
+              >
+                🎁
+              </motion.div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
+                🎉 Congratulations!
+              </h2>
+              <p className="text-lg font-semibold">
+                Upon completion you are eligible for a FREE Glass Guard for your mobile phone.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Tempered Glass Free & 50% Discount on UV Glass.
+              </p>
+              
+              {!offerStatus.claimed ? (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowOfferPopup(true)}
+                  className="task-button flex items-center justify-center space-x-2 mx-auto"
+                >
+                  <Gift className="w-5 h-5" />
+                  <span>Claim Offer</span>
+                </motion.button>
+              ) : (
+                <motion.div
+                  initial={{ scale: 0.8 }}
+                  animate={{ scale: 1 }}
+                  className="flex items-center justify-center space-x-2 text-success font-semibold"
+                >
+                  <Check className="w-5 h-5" />
+                  <span>Offer Claimed Successfully!</span>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Celebration Message */}
         <AnimatePresence>
           {showCelebration && (

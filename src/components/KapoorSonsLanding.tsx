@@ -217,20 +217,37 @@ const KapoorSonsLanding: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Simple method: Open Google Form or redirect to a simple form
-      // Create a pre-filled Google Form URL or use a simple data collection method
-      
-      // For now, we'll just log the data and mark as claimed
-      console.log('Claim form data:', {
+      // Method 1: Try to save to Google Sheets using a simple approach
+      const data = {
         name: claimForm.name,
         mobile: claimForm.mobile,
         timestamp: new Date().toISOString(),
         date: new Date().toLocaleDateString()
-      });
+      };
 
-      // You can manually add this data to your Google Sheet
-      // Or use a simple form service like Formspree, Netlify Forms, etc.
-      
+      // Try to save to Google Sheets using a simple POST request
+      try {
+        const response = await fetch('https://docs.google.com/forms/d/e/1FAIpQLSfYOUR_FORM_ID/formResponse', {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            'entry.NAME_FIELD_ID': data.name,
+            'entry.MOBILE_FIELD_ID': data.mobile,
+            'entry.TIMESTAMP_FIELD_ID': data.timestamp
+          })
+        });
+        console.log('Data submitted to Google Sheets');
+      } catch (sheetError) {
+        console.log('Google Sheets submission failed, using fallback method');
+        
+        // Fallback: Open a pre-filled Google Form in new tab
+        const googleFormUrl = `https://docs.google.com/forms/d/e/1FAIpQLSfYOUR_FORM_ID/viewform?usp=pp_url&entry.NAME_FIELD_ID=${encodeURIComponent(data.name)}&entry.MOBILE_FIELD_ID=${encodeURIComponent(data.mobile)}`;
+        window.open(googleFormUrl, '_blank');
+      }
+
       // Mark as claimed
       setOfferStatus({ claimed: true, claimTime: Date.now() });
       setShowOfferPopup(false);

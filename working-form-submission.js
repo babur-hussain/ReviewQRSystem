@@ -38,7 +38,7 @@ const handleClaimSubmit = async (e) => {
 
     // Method 2: Also try SheetMonkey (if you set it up)
     try {
-      const response = await fetch('https://api.sheetmonkey.io/form/84HPuH9HVdTTM3akQR25ef', {
+      const response = await fetch('https://api.sheetmonkey.io/form/vbn1Si636FeeiLRahK7vxv', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

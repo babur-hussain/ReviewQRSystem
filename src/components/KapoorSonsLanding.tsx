@@ -227,7 +227,7 @@ const KapoorSonsLanding: React.FC = () => {
       // Save data to Google Sheets using a working method
       try {
         // Use a simple service that works with Google Sheets
-        const response = await fetch('https://api.sheetmonkey.io/form/84HPuH9HVdTTM3akQR25ef', {
+        const response = await fetch('https://api.sheetmonkey.io/form/vbn1Si636FeeiLRahK7vxv', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
